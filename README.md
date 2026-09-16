@@ -1,4 +1,4 @@
-# BELAPP — Android BLE 继电器充电自动控制
+# BELAPP — Android BLE 充电自动控制
 
 配合 ESP32-C3 继电器模块，实现手机电量阈值自动开关充电。
 
