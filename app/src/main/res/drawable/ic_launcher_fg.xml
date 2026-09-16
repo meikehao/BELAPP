@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:translateX="20" android:translateY="14">
+        <!-- 电池外框 -->
+        <path
+            android:fillColor="#4C35A6"
+            android:pathData="M58,8 L10,8 C6.69,8 4,10.69 4,14 L4,66 C4,69.31 6.69,72 10,72 L58,72 C61.31,72 64,69.31 64,66 L64,14 C64,10.69 61.31,8 58,8 Z M60,22 L67,22 L67,58 L60,58 Z" />
+        <!-- 电量填充（80%） -->
+        <path
+            android:fillColor="#7C5CFF"
+            android:pathData="M10,20 L58,20 L58,62 L10,62 Z"
+            android:alpha="0.25"/>
+        <path
+            android:fillColor="#7C5CFF"
+            android:pathData="M10,26.4 L58,26.4 L58,62 L10,62 Z"/>
+        <!-- 蓝牙符号 -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M28,36 L40,22 L40,30 L48,22 L38,36 L48,50 L40,42 L40,50 Z"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="0.5"/>
+    </group>
+</vector>

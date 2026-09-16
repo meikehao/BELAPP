@@ -1,0 +1,17 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- 扁平化无阴影主题 -->
+    <style name="Theme.BatteryBLEApp" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#4C35A6</item>
+        <item name="colorPrimaryVariant">#3A2A80</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#228B5B</item>
+        <item name="colorSecondaryVariant">#1A6B47</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@android:color/white</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowBackground">#F7F7FA</item>
+        <item name="android:navigationBarColor" tools:targetApi="o_mr1">@android:color/white</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="elevationOverlayEnabled">false</item>
+    </style>
+</resources>
