@@ -42,7 +42,7 @@ class BleManager(private val context: Context) {
 
         // ===== ESP32-C3 蓝牙开关协议（对接文档 v1.0） =====
         // 设备广播名，按名称扫描过滤 / 重连匹配。注意：地址是 Random Static，不要持久化 MAC。
-        const val DEVICE_NAME = "C3_BLE_01"
+        const val DEVICE_NAME = "洁洁的哈士奇"
 
         // 服务 0xF000（Unknown Service）
         val DEFAULT_SERVICE_UUID: UUID = UUID.fromString("0000F000-0000-1000-8000-00805F9B34FB")
