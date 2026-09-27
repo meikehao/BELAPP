@@ -275,6 +275,35 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvDeviceNameLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="设备广播名: --"
+                        android:textSize="12sp"
+                        android:textColor="#555555" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnEditDeviceName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:minHeight="32dp"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:text="修改"
+                        android:textSize="12sp"
+                        android:textColor="#1E4787"
+                        android:background="@drawable/bg_btn_blue" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:orientation="horizontal">
 

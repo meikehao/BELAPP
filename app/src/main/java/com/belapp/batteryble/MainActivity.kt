@@ -2,6 +2,7 @@ package com.belapp.batteryble
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
@@ -9,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -103,6 +105,9 @@ class MainActivity : AppCompatActivity() {
         binding.tvThresholdInfo.text =
             "当前：充到 ${savedOpen}% 自动关（停充电），掉到 ${savedClose}% 自动开（开始充电）"
 
+        // ===== 显示当前设备广播名 =====
+        refreshDeviceNameLabel()
+
         // ===== 键盘自动收起 =====
         // 只有一处：点"应用阈值"时主动收键盘 + clearFocus，避免光标残留
         // Android 原生机制已处理好：点 EditText 聚焦弹键盘、点空白失焦自动收键盘
@@ -177,6 +182,39 @@ class MainActivity : AppCompatActivity() {
             val ok = bleManager.sendSwitch(false)
             toast(if (ok) "已发送关充电指令" else "发送失败")
         }
+
+        // ===== 修改设备广播名 =====
+        binding.btnEditDeviceName.setOnClickListener {
+            val input = EditText(this).apply {
+                hint = "输入新的设备广播名"
+                setText(bleManager.deviceName)
+                setSingleLine()
+                requestFocus()
+            }
+            AlertDialog.Builder(this)
+                .setTitle("修改设备广播名")
+                .setView(input)
+                .setPositiveButton("保存") { _, _ ->
+                    val newName = input.text?.toString()?.trim()
+                    if (newName.isNullOrEmpty()) {
+                        toast("名字不能为空")
+                        return@setPositiveButton
+                    }
+                    if (newName.length > 20) {
+                        toast("名字太长（≤20字符）")
+                        return@setPositiveButton
+                    }
+                    bleManager.updateDeviceName(newName)
+                    refreshDeviceNameLabel()
+                    toast("已更新广播名为：$newName\n下次扫描生效")
+                }
+                .setNegativeButton("取消", null)
+                .show()
+        }
+    }
+
+    private fun refreshDeviceNameLabel() {
+        binding.tvDeviceNameLabel.text = "设备广播名: ${bleManager.deviceName}"
     }
 
     private fun startObserving() {
@@ -269,7 +307,7 @@ class MainActivity : AppCompatActivity() {
         val r = bleManager.readText.value
         val n = bleManager.notifyText.value
         val sb = StringBuilder()
-        if (bleManager.isConnected()) sb.append("已连接设备：${BleManager.DEVICE_NAME}")
+        if (bleManager.isConnected()) sb.append("已连接设备：${bleManager.deviceName}")
         if (r.isNotEmpty()) sb.append("\n连通自检(Read)：$r")
         if (n.isNotEmpty()) sb.append("\n设备通知(Notify)：$n")
         binding.tvConnectedDevice.text = sb.toString()

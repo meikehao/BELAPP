@@ -39,10 +39,11 @@ class BleManager(private val context: Context) {
     companion object {
         private const val TAG = "BleManager"
         private const val SCAN_TIMEOUT_MS = 10_000L
+        private const val PREFS_NAME = "battery_ble_prefs"
+        private const val KEY_DEVICE_NAME = "ble_device_name"
+        private const val DEFAULT_DEVICE_NAME = "洁洁的哈士奇"
 
         // ===== ESP32-C3 蓝牙开关协议（对接文档 v1.0） =====
-        // 设备广播名，按名称扫描过滤 / 重连匹配。注意：地址是 Random Static，不要持久化 MAC。
-        const val DEVICE_NAME = "洁洁的哈士奇"
 
         // 服务 0xF000（Unknown Service）
         val DEFAULT_SERVICE_UUID: UUID = UUID.fromString("0000F000-0000-1000-8000-00805F9B34FB")
@@ -56,6 +57,20 @@ class BleManager(private val context: Context) {
         const val CMD_OFF: Byte = 0x30  // '0' → GPIO3 0V（释放）
         const val STATE_TEXT_READY_READ = "hello"     // Read F001 的连通性自检值
         const val STATE_TEXT_CONNECTED = "connected"  // 使能 Notify 当刻回发的通知
+    }
+
+    // 当前使用的设备广播名（从 SharedPrefs 读取，updateDeviceName() 可改）
+    var deviceName: String = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_DEVICE_NAME, DEFAULT_DEVICE_NAME) ?: DEFAULT_DEVICE_NAME
+        private set
+
+    fun updateDeviceName(newName: String) {
+        val trimmed = newName.trim()
+        if (trimmed.isEmpty()) return
+        deviceName = trimmed
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit().putString(KEY_DEVICE_NAME, trimmed).apply()
+        Log.d(TAG, "deviceName updated to: $trimmed")
     }
 
     data class BleDevice(
@@ -470,10 +485,10 @@ class BleManager(private val context: Context) {
         _notifyText.value = ""
         _isScanning.value = true
 
-        // 按设备广播名 C3_BLE_01 过滤（文档 1.1 推荐，地址是随机静态地址不可依赖）
+        // 按设备广播名过滤（地址是随机静态地址不可依赖）
         val scanner = adapter.bluetoothLeScanner
         if (scanner != null) {
-            val filter = ScanFilter.Builder().setDeviceName(DEVICE_NAME).build()
+            val filter = ScanFilter.Builder().setDeviceName(deviceName).build()
             val settings = ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                 .build()
@@ -481,7 +496,7 @@ class BleManager(private val context: Context) {
                 .onFailure { Log.e(TAG, "startScan(LE) failed: $it") }
         }
         handler.postDelayed({ stopScan() }, SCAN_TIMEOUT_MS)
-        Log.d(TAG, "Scan started, filter name=$DEVICE_NAME")
+        Log.d(TAG, "Scan started, filter name=$deviceName")
     }
 
     @SuppressLint("MissingPermission")
