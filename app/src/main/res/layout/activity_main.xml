@@ -261,6 +261,16 @@
                         android:layout_height="10dp"
                         android:layout_marginStart="8dp"
                         android:background="@drawable/bg_status_dot" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnEditDeviceName"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="6dp"
+                        android:src="@android:drawable/ic_menu_edit"
+                        android:contentDescription="修改广播名" />
                 </LinearLayout>
 
                 <TextView
@@ -298,15 +308,6 @@
                         android:layout_marginStart="8dp"
                         android:ellipsize="end"
                         android:singleLine="true" />
-
-                    <androidx.appcompat.widget.AppCompatImageButton
-                        android:id="@+id/btnEditDeviceName"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="6dp"
-                        android:src="@android:drawable/ic_menu_edit"
-                        android:contentDescription="修改广播名" />
                 </LinearLayout>
 
                 <LinearLayout
