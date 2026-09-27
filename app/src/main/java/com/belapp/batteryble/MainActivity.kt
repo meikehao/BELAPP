@@ -190,8 +190,6 @@ class MainActivity : AppCompatActivity() {
         binding.btnEditDeviceName.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.dialog_edit_device_name, null)
             val input = dialogView.findViewById<EditText>(R.id.etIosInput)
-            input.setText(bleManager.deviceName)
-            input.setSelection(input.text?.length ?: 0)
 
             val dialog = Dialog(this).apply {
                 setContentView(dialogView)
