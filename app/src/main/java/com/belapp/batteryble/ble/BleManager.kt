@@ -41,7 +41,7 @@ class BleManager(private val context: Context) {
         private const val SCAN_TIMEOUT_MS = 10_000L
         private const val PREFS_NAME = "battery_ble_prefs"
         private const val KEY_DEVICE_NAME = "ble_device_name"
-        private const val DEFAULT_DEVICE_NAME = "洁洁的哈士奇"
+        const val DEFAULT_DEVICE_NAME = "洁洁的哈士奇"
 
         // ===== ESP32-C3 蓝牙开关协议（对接文档 v1.0） =====
 
