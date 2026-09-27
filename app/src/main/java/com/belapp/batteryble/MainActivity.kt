@@ -228,10 +228,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshDeviceNameLabel() {
-        val name = bleManager.deviceName
-        val isDefault = name == BleManager.DEFAULT_DEVICE_NAME
-        binding.tvDeviceNameLabel.visibility = if (isDefault) View.GONE else View.VISIBLE
-        binding.tvDeviceNameLabel.text = name
+        binding.tvDeviceNameLabel.visibility = View.VISIBLE
+        binding.tvDeviceNameLabel.text = bleManager.deviceName
     }
 
     private fun startObserving() {
