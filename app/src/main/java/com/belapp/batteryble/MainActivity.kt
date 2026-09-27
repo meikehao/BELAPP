@@ -2,13 +2,16 @@ package com.belapp.batteryble
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
@@ -183,38 +186,49 @@ class MainActivity : AppCompatActivity() {
             toast(if (ok) "已发送关充电指令" else "发送失败")
         }
 
-        // ===== 修改设备广播名 =====
+        // ===== 修改设备广播名（iOS 风格弹窗）=====
         binding.btnEditDeviceName.setOnClickListener {
-            val input = EditText(this).apply {
-                hint = "输入新的设备广播名"
-                setText(bleManager.deviceName)
-                setSingleLine()
-                requestFocus()
+            val dialogView = layoutInflater.inflate(R.layout.dialog_edit_device_name, null)
+            val input = dialogView.findViewById<EditText>(R.id.etIosInput)
+            input.setText(bleManager.deviceName)
+            input.setSelection(input.text?.length ?: 0)
+
+            val dialog = Dialog(this).apply {
+                setContentView(dialogView)
+                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                window?.setDimAmount(0.5f)
+                setCancelable(true)
             }
-            AlertDialog.Builder(this)
-                .setTitle("修改设备广播名")
-                .setView(input)
-                .setPositiveButton("保存") { _, _ ->
+
+            dialogView.findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btnIosCancel)
+                .setOnClickListener { dialog.dismiss() }
+            dialogView.findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btnIosSave)
+                .setOnClickListener {
                     val newName = input.text?.toString()?.trim()
                     if (newName.isNullOrEmpty()) {
                         toast("名字不能为空")
-                        return@setPositiveButton
+                        return@setOnClickListener
                     }
                     if (newName.length > 20) {
                         toast("名字太长（≤20字符）")
-                        return@setPositiveButton
+                        return@setOnClickListener
                     }
                     bleManager.updateDeviceName(newName)
                     refreshDeviceNameLabel()
-                    toast("已更新广播名为：$newName\n下次扫描生效")
+                    dialog.dismiss()
+                    toast("已更新，下次扫描生效")
                 }
-                .setNegativeButton("取消", null)
-                .show()
+
+            dialog.show()
+            // 自动弹键盘
+            dialog.window?.setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
+            )
         }
     }
 
     private fun refreshDeviceNameLabel() {
-        binding.tvDeviceNameLabel.text = "设备广播名: ${bleManager.deviceName}"
+        binding.tvDeviceNameLabel.text = bleManager.deviceName
     }
 
     private fun startObserving() {

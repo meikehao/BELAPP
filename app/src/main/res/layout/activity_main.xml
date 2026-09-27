@@ -280,25 +280,32 @@
                     android:gravity="center_vertical">
 
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="广播名"
+                        android:textSize="12sp"
+                        android:textColor="#999999" />
+
+                    <TextView
                         android:id="@+id/tvDeviceNameLabel"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="设备广播名: --"
-                        android:textSize="12sp"
-                        android:textColor="#555555" />
+                        android:text="--"
+                        android:textSize="13sp"
+                        android:textColor="#333333"
+                        android:layout_marginStart="8dp"
+                        android:ellipsize="end"
+                        android:singleLine="true" />
 
-                    <androidx.appcompat.widget.AppCompatButton
+                    <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/btnEditDeviceName"
-                        android:layout_width="wrap_content"
+                        android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:minHeight="32dp"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="4dp"
-                        android:text="修改"
-                        android:textSize="12sp"
-                        android:textColor="#1E4787"
-                        android:background="@drawable/bg_btn_blue" />
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="6dp"
+                        android:src="@android:drawable/ic_menu_edit"
+                        android:contentDescription="修改广播名" />
                 </LinearLayout>
 
                 <LinearLayout
