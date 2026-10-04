@@ -50,6 +50,8 @@ class BleManager(private val context: Context) {
         // 控制特征 0xF001（READ | WRITE | NOTIFY 三合一）
         val DEFAULT_WRITE_CHAR_UUID: UUID = UUID.fromString("0000F001-0000-1000-8000-00805F9B34FB")
         val DEFAULT_NOTIFY_CHAR_UUID: UUID = UUID.fromString("0000F001-0000-1000-8000-00805F9B34FB")
+        // 广播名写入特征 0xF002（WRITE）——固件收到后重启广播，实现真·改广播名
+        val NAME_CHAR_UUID: UUID = UUID.fromString("0000F002-0000-1000-8000-00805F9B34FB")
         val CCC_DESCRIPTOR_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB")
 
         // 开 / 关 指令（HEX '1'=31, '0'=30；必须用 Write Request 带响应）
@@ -71,6 +73,48 @@ class BleManager(private val context: Context) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit().putString(KEY_DEVICE_NAME, trimmed).apply()
         Log.d(TAG, "deviceName updated to: $trimmed")
+    }
+
+    // 待写入设备的广播名（连接就绪后自动下发；设备离线时先存起来）
+    @Volatile
+    private var pendingNameWrite: String? = null
+
+    /**
+     * 写广播名到设备（0xF002）。
+     * - 已连接且初始化完成：立即写入
+     * - 未连接：挂起，等下次连接就绪后自动写入
+     */
+    fun writeDeviceNameToDevice(newName: String): Boolean {
+        val trimmed = newName.trim()
+        if (trimmed.isEmpty()) return false
+        if (!isConnected() || !discoveredReady) {
+            pendingNameWrite = trimmed
+            Log.d(TAG, "device not ready, name \"$trimmed\" queued for next connection")
+            return false
+        }
+        return doWriteName(trimmed)
+    }
+
+    /** 真正下发 0xF002 写名（带响应 Write Request） */
+    private fun doWriteName(name: String): Boolean {
+        val g = gatt ?: return false
+        val nc = g.getService(serviceUuid)?.getCharacteristic(NAME_CHAR_UUID) ?: run {
+            Log.w(TAG, "name char 0xF002 not found (old firmware?)")
+            return false
+        }
+        return try {
+            @Suppress("DEPRECATION")
+            nc.writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+            @Suppress("DEPRECATION")
+            nc.value = name.toByteArray(Charsets.UTF_8)
+            @Suppress("DEPRECATION")
+            val ok = g.writeCharacteristic(nc)
+            Log.d(TAG, "writeName(\"$name\") ${if (ok) "issued" else "REJECTED"}")
+            ok
+        } catch (e: Exception) {
+            Log.e(TAG, "writeName exception: ${e.message}")
+            false
+        }
     }
 
     data class BleDevice(
@@ -401,6 +445,11 @@ class BleManager(private val context: Context) {
                 discoveredReady = true  // 无论成功与否，都开放写入
                 // 初始化期间可能有排队的写入，现在开始处理
                 drainWriteQueue()
+                // 连接就绪：若有待写的广播名，自动下发
+                pendingNameWrite?.let { name ->
+                    pendingNameWrite = null
+                    handler.post { doWriteName(name) }
+                }
             }
         }
 

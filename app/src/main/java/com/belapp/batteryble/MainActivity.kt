@@ -212,9 +212,12 @@ class MainActivity : AppCompatActivity() {
                         return@setOnClickListener
                     }
                     bleManager.updateDeviceName(newName)
+                    // 同步写入 ESP32 广播名（0xF002）：未连接时挂起，连上后自动下发
+                    val sent = bleManager.writeDeviceNameToDevice(newName)
                     refreshDeviceNameLabel()
                     dialog.dismiss()
-                    toast("已更新，下次扫描生效")
+                    toast(if (sent) "已保存并写入设备，重启广播后生效"
+                          else "已保存，连接设备后自动写入")
                 }
 
             dialog.show()
