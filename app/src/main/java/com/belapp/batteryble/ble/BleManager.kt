@@ -485,10 +485,13 @@ class BleManager(private val context: Context) {
         _notifyText.value = ""
         _isScanning.value = true
 
-        // 按设备广播名过滤（地址是随机静态地址不可依赖）
+        // 按 Service UUID 过滤（ESP32-C3 固件协议固定），不受广播名变更影响
         val scanner = adapter.bluetoothLeScanner
         if (scanner != null) {
-            val filter = ScanFilter.Builder().setDeviceName(deviceName).build()
+            val serviceParcel = android.os.ParcelUuid(DEFAULT_SERVICE_UUID)
+            val filter = ScanFilter.Builder()
+                .setServiceUuid(serviceParcel)
+                .build()
             val settings = ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                 .build()
@@ -496,7 +499,7 @@ class BleManager(private val context: Context) {
                 .onFailure { Log.e(TAG, "startScan(LE) failed: $it") }
         }
         handler.postDelayed({ stopScan() }, SCAN_TIMEOUT_MS)
-        Log.d(TAG, "Scan started, filter name=$deviceName")
+        Log.d(TAG, "Scan started, filter by service UUID=$DEFAULT_SERVICE_UUID")
     }
 
     @SuppressLint("MissingPermission")
